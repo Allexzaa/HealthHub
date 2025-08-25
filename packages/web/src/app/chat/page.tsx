@@ -209,7 +209,7 @@ export default function SecureChat() {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 px-3 py-2 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-lg">
             <Shield className="w-4 h-4" />
-            <span className="text-sm font-medium">HIPAA Compliant</span>
+            <span className="text-sm font-medium">Secure & Encrypted</span>
           </div>
           {healthcarePersonnel.reduce((total, person) => total + person.unreadCount, 0) > 0 && (
             <div className="flex items-center gap-2 px-3 py-2 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-lg">
@@ -307,7 +307,7 @@ export default function SecureChat() {
             <div className="p-4 border-t border-gray-200 dark:border-gray-700">
               <div className="mb-2 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                 <Lock className="w-3 h-3 text-green-500" />
-                Messages are end-to-end encrypted and HIPAA compliant
+                Messages are end-to-end encrypted and fully secure
               </div>
               <div className="flex items-center gap-2">
                 <div className="flex-1 relative">
@@ -401,7 +401,7 @@ export default function SecureChat() {
               <div className="flex items-center gap-3 p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
                 <Shield className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 <div>
-                  <p className="text-xs font-medium text-blue-900 dark:text-blue-300">HIPAA Compliant</p>
+                  <p className="text-xs font-medium text-blue-900 dark:text-blue-300">Secure Messaging</p>
                   <p className="text-xs text-blue-700 dark:text-blue-400">Healthcare privacy protected</p>
                 </div>
               </div>
