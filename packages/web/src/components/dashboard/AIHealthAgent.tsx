@@ -363,47 +363,79 @@ export function AIHealthAgent() {
               </div>
             </div>
             <div className="text-right">
-              <div className="mb-2">
-                <span className="text-xs text-gray-500 dark:text-gray-400">Health Score</span>
-                <div className="flex items-center gap-2">
-                  <span className={`text-2xl font-bold ${getHealthScoreColor(healthScore)}`}>{healthScore}</span>
-                  <div className="flex flex-col items-center">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center text-white text-xs font-bold shadow-lg">
-                      {healthScore}
+              <div className="relative backdrop-blur-md bg-white/20 dark:bg-white/10 rounded-xl px-4 py-3 border border-white/30 dark:border-white/20 shadow-lg shadow-white/10">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-xl"></div>
+                <div className="relative">
+                  <p className="text-xs text-gray-600/80 dark:text-gray-400/90 font-medium mb-2">Overall Health Score</p>
+                  <div className="flex items-center gap-3">
+                    <span className={`text-3xl font-bold ${getHealthScoreColor(healthScore)} drop-shadow-sm`}>{healthScore}</span>
+                    <div className="flex flex-col items-center">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center text-white text-sm font-bold shadow-lg">
+                        {healthScore}
+                      </div>
+                      <span className="text-xs text-green-600 dark:text-green-400 font-medium mt-1">Excellent</span>
                     </div>
-                    <span className="text-xs text-green-600 dark:text-green-400 font-medium mt-1">Excellent</span>
                   </div>
+                  <p className="text-xs text-gray-500/80 dark:text-gray-400/80 mt-2">Based on recent metrics</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* AI Status & Summary */}
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 mb-6 border border-blue-200/50 dark:border-blue-700/50">
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-md">
-                <Brain className="w-5 h-5 text-white" />
+          {/* Comprehensive Health Status & AI Summary */}
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-5 mb-6 border border-blue-200/50 dark:border-blue-700/50 shadow-sm">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg">
+                <Brain className="w-6 h-6 text-white" />
               </div>
               <div className="flex-1">
-                <p className="text-sm text-gray-800 dark:text-gray-200 font-medium mb-2">
-                  {getGreeting()}! I've been monitoring your health data continuously.
-                </p>
-                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                  Your health metrics show good overall stability. I've detected a slight increase in blood pressure that needs attention. 
-                  Your weight loss progress is excellent, and stress levels are well-managed. Ready to dive deeper into your health insights?
-                </p>
-                <div className="flex items-center gap-4 mt-3">
+                <div className="flex items-center gap-2 mb-3">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    {getGreeting()}! 
+                  </h3>
                   <div className="flex items-center gap-1 text-xs bg-green-200/60 dark:bg-green-900/40 text-green-700 dark:text-green-300 px-2 py-1 rounded-full">
+                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                    <span>AI Active</span>
+                  </div>
+                </div>
+                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                  I've been continuously monitoring your health data and have analyzed your latest metrics. Your overall health stability is good with some key observations that require attention. 
+                  Your weight loss progress is excellent, and stress management has improved significantly.
+                </p>
+                
+                {/* Health Summary Stats */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                  <div className="bg-white/60 dark:bg-gray-800/40 rounded-lg p-3 text-center">
+                    <div className="text-lg font-bold text-green-600 dark:text-green-400">5</div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400">Goals On Track</div>
+                  </div>
+                  <div className="bg-white/60 dark:bg-gray-800/40 rounded-lg p-3 text-center">
+                    <div className="text-lg font-bold text-orange-600 dark:text-orange-400">1</div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400">Alert</div>
+                  </div>
+                  <div className="bg-white/60 dark:bg-gray-800/40 rounded-lg p-3 text-center">
+                    <div className="text-lg font-bold text-blue-600 dark:text-blue-400">3</div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400">Recommendations</div>
+                  </div>
+                  <div className="bg-white/60 dark:bg-gray-800/40 rounded-lg p-3 text-center">
+                    <div className="text-lg font-bold text-purple-600 dark:text-purple-400">95%</div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400">Adherence</div>
+                  </div>
+                </div>
+
+                {/* Status Tags */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <div className="flex items-center gap-1 text-xs bg-green-200/60 dark:bg-green-900/40 text-green-700 dark:text-green-300 px-3 py-1.5 rounded-full">
                     <CheckCircle className="w-3 h-3" />
-                    <span>5 Goals on track</span>
+                    <span>Weight Loss Progress</span>
                   </div>
-                  <div className="flex items-center gap-1 text-xs bg-orange-200/60 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300 px-2 py-1 rounded-full">
+                  <div className="flex items-center gap-1 text-xs bg-orange-200/60 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300 px-3 py-1.5 rounded-full">
                     <AlertTriangle className="w-3 h-3" />
-                    <span>1 Alert</span>
+                    <span>BP Monitoring Needed</span>
                   </div>
-                  <div className="flex items-center gap-1 text-xs bg-blue-200/60 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full">
+                  <div className="flex items-center gap-1 text-xs bg-blue-200/60 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded-full">
                     <Target className="w-3 h-3" />
-                    <span>3 Recommendations</span>
+                    <span>Ready for Deep Analysis</span>
                   </div>
                 </div>
               </div>
