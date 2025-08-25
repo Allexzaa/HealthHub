@@ -1,4 +1,5 @@
 import { AIPanel } from '@/components/dashboard/AIPanel'
+import { AIHealthAgent } from '@/components/dashboard/AIHealthAgent'
 import { HealthMetrics } from '@/components/dashboard/HealthMetrics'
 import { QuickActions } from '@/components/dashboard/QuickActions'
 import { Appointments } from '@/components/dashboard/Appointments'
@@ -28,6 +29,9 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Featured AI Health Agent - Full Width */}
+      <AIHealthAgent />
 
       {/* Main Content - Reorganized for better findability */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
