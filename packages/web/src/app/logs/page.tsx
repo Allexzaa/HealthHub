@@ -495,7 +495,7 @@ export default function HealthLogs() {
             </div>
           </div>
 
-{logsViewMode === 'list' ? (
+          {logsViewMode === 'list' ? (
                 <div className="space-y-4">
                   {filteredLogs.map((log) => (
                     <div key={log.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200">
@@ -616,7 +616,6 @@ export default function HealthLogs() {
                     </div>
                   ))}
                 </div>
-            </div>
           )}
 
           {filteredLogs.length === 0 && (
