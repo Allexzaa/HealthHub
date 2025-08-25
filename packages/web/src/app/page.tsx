@@ -1,4 +1,3 @@
-import { AIPanel } from '@/components/dashboard/AIPanel'
 import { AIHealthAgent } from '@/components/dashboard/AIHealthAgent'
 import { HealthMetrics } from '@/components/dashboard/HealthMetrics'
 import { QuickActions } from '@/components/dashboard/QuickActions'
@@ -33,21 +32,16 @@ export default function Dashboard() {
       {/* Featured AI Health Agent - Full Width */}
       <AIHealthAgent />
 
-      {/* Main Content - Reorganized for better findability */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      {/* Main Content - Reorganized for better focus */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column - Quick Actions & Alerts */}
         <div className="lg:col-span-1 space-y-4">
           <QuickActions />
           <AlertsReminders />
         </div>
         
-        {/* Center - AI Assistants (Main Focus) */}
-        <div className="lg:col-span-2">
-          <AIPanel />
-        </div>
-        
-        {/* Right Column - Health Data */}
-        <div className="lg:col-span-1 space-y-4">
+        {/* Right Column - Health Data & Appointments */}
+        <div className="lg:col-span-2 grid grid-cols-1 xl:grid-cols-2 gap-4">
           <HealthMetrics />
           <Appointments />
         </div>
