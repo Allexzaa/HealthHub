@@ -6,13 +6,15 @@ import {
   Activity, Plus, Calendar, TrendingUp, Heart, Thermometer, Scale, Zap, 
   Clock, Filter, Download, Upload, Search, AlertTriangle, CheckCircle,
   Droplets, Brain, Moon, Apple, Pill, Stethoscope, Eye, Target,
-  BarChart3, PieChart, LineChart, Edit, Trash2, Share2, Bell, Users
+  BarChart3, PieChart, LineChart, Edit, Trash2, Share2, Bell, Users,
+  Grid3X3, List
 } from 'lucide-react'
 
 export default function HealthLogs() {
   const [selectedDateRange, setSelectedDateRange] = useState('7days')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [viewMode, setViewMode] = useState('list') // list, chart, calendar
+  const [logsViewMode, setLogsViewMode] = useState('list') // list or tile
 
   // Comprehensive health logs with multiple categories
   const healthLogs = [
@@ -417,174 +419,257 @@ export default function HealthLogs() {
         </div>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Categories Sidebar */}
-        <div>
-          <Card className="p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Categories
-            </h2>
-            <div className="space-y-2">
-              {logCategories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`w-full text-left p-3 rounded-lg transition-colors ${
-                    selectedCategory === category.id 
-                      ? 'bg-blue-50 dark:bg-blue-900 border-2 border-blue-200 dark:border-blue-700' 
-                      : 'hover:bg-gray-50 dark:hover:bg-gray-800'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${category.color}`}>
-                        <category.icon className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <div className="font-medium text-gray-900 dark:text-white">{category.name}</div>
-                        <div className="text-xs text-gray-500 dark:text-gray-500">{category.count} entries</div>
-                      </div>
-                    </div>
-                  </div>
-                </button>
-              ))}
+      {/* Compact Categories Bar */}
+      <Card className="p-4 mb-6 animate-in slide-in-from-top duration-300">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Categories</h3>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {logCategories.map((category) => {
+            const Icon = category.icon
+            const isActive = selectedCategory === category.id
+            return (
+              <button
+                key={category.id}
+                onClick={() => setSelectedCategory(category.id)}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm ${
+                  isActive
+                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                <Icon className={`w-4 h-4 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500'}`} />
+                <span className="font-medium">{category.name}</span>
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                  isActive
+                    ? 'bg-blue-200 dark:bg-blue-800 text-blue-800 dark:text-blue-200'
+                    : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-400'
+                }`}>
+                  {category.count}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      </Card>
+
+      {/* Main Content Area */}
+      {viewMode === 'list' && (
+        <Card className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Health Entries ({filteredLogs.length})
+              </h2>
             </div>
-          </Card>
-        </div>
-
-        {/* Main Content Area */}
-        <div className="lg:col-span-3">
-          {viewMode === 'list' && (
-            <Card className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                  Health Entries ({filteredLogs.length})
-                </h2>
-                <div className="flex items-center gap-2">
-                  <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                    <Bell className="w-5 h-5" />
-                  </button>
-                  <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                    <Share2 className="w-5 h-5" />
-                  </button>
-                </div>
+            <div className="flex items-center gap-2">
+              {/* Logs View Mode Toggle */}
+              <div className="flex border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden mr-3">
+                <button
+                  onClick={() => setLogsViewMode('list')}
+                  className={`p-2 transition-colors ${logsViewMode === 'list'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600'
+                    }`}
+                  title="List view"
+                >
+                  <List className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setLogsViewMode('tile')}
+                  className={`p-2 transition-colors ${logsViewMode === 'tile'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600'
+                    }`}
+                  title="Tile view"
+                >
+                  <Grid3X3 className="w-4 h-4" />
+                </button>
               </div>
+              <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                <Bell className="w-5 h-5" />
+              </button>
+              <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                <Share2 className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
 
-              <div className="space-y-4">
-                {filteredLogs.map((log) => (
-                  <div key={log.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200">
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <log.icon className={`w-6 h-6 ${log.color}`} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <h3 className="font-semibold text-gray-900 dark:text-white">{log.type}</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                              Normal range: {log.normalRange}
-                            </p>
+{logsViewMode === 'list' ? (
+                <div className="space-y-4">
+                  {filteredLogs.map((log) => (
+                    <div key={log.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200">
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <log.icon className={`w-6 h-6 ${log.color}`} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between mb-2">
+                            <div>
+                              <h3 className="font-semibold text-gray-900 dark:text-white">{log.type}</h3>
+                              <p className="text-sm text-gray-600 dark:text-gray-400">
+                                Normal range: {log.normalRange}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {getTrendIcon(log.trend)}
+                              <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(log.status)}`}>
+                                {log.status}
+                              </span>
+                            </div>
                           </div>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                            <div>
+                              <span className="text-sm font-medium text-gray-900 dark:text-white">Value:</span>
+                              <p className="text-lg font-bold text-blue-600 dark:text-blue-400">{log.value}</p>
+                            </div>
+                            <div>
+                              <span className="text-sm font-medium text-gray-900 dark:text-white">Time:</span>
+                              <p className="text-sm text-gray-600 dark:text-gray-400">{log.timestamp}</p>
+                            </div>
+                            <div>
+                              <span className="text-sm font-medium text-gray-900 dark:text-white">Trend:</span>
+                              <p className="text-sm text-gray-600 dark:text-gray-400 capitalize">{log.trend}</p>
+                            </div>
+                          </div>
+                          {log.notes && (
+                            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mb-3">
+                              <span className="text-sm font-medium text-gray-900 dark:text-white">Notes:</span>
+                              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{log.notes}</p>
+                            </div>
+                          )}
                           <div className="flex items-center gap-2">
-                            {getTrendIcon(log.trend)}
-                            <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(log.status)}`}>
-                              {log.status}
-                            </span>
+                            <button className="text-blue-600 hover:text-blue-700 text-sm flex items-center gap-1">
+                              <Edit className="w-4 h-4" />
+                              Edit
+                            </button>
+                            <button className="text-red-600 hover:text-red-700 text-sm flex items-center gap-1">
+                              <Trash2 className="w-4 h-4" />
+                              Delete
+                            </button>
+                            <button className="text-gray-600 hover:text-gray-700 text-sm flex items-center gap-1">
+                              <Share2 className="w-4 h-4" />
+                              Share with doctor
+                            </button>
                           </div>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-                          <div>
-                            <span className="text-sm font-medium text-gray-900 dark:text-white">Value:</span>
-                            <p className="text-lg font-bold text-blue-600 dark:text-blue-400">{log.value}</p>
-                          </div>
-                          <div>
-                            <span className="text-sm font-medium text-gray-900 dark:text-white">Time:</span>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">{log.timestamp}</p>
-                          </div>
-                          <div>
-                            <span className="text-sm font-medium text-gray-900 dark:text-white">Trend:</span>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 capitalize">{log.trend}</p>
-                          </div>
-                        </div>
-                        {log.notes && (
-                          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mb-3">
-                            <span className="text-sm font-medium text-gray-900 dark:text-white">Notes:</span>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{log.notes}</p>
-                          </div>
-                        )}
-                        <div className="flex items-center gap-2">
-                          <button className="text-blue-600 hover:text-blue-700 text-sm flex items-center gap-1">
-                            <Edit className="w-4 h-4" />
-                            Edit
-                          </button>
-                          <button className="text-red-600 hover:text-red-700 text-sm flex items-center gap-1">
-                            <Trash2 className="w-4 h-4" />
-                            Delete
-                          </button>
-                          <button className="text-gray-600 hover:text-gray-700 text-sm flex items-center gap-1">
-                            <Share2 className="w-4 h-4" />
-                            Share with doctor
-                          </button>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-
-              {filteredLogs.length === 0 && (
-                <div className="text-center py-12">
-                  <Activity className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No logs found</h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-4">
-                    Start tracking your health by adding your first log entry.
-                  </p>
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 mx-auto">
-                    <Plus className="w-4 h-4" />
-                    Add First Entry
-                  </button>
+                  ))}
                 </div>
-              )}
-            </Card>
+          ) : (
+            <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {filteredLogs.map((log) => (
+                    <div key={log.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 flex flex-col h-full">
+                      {/* Header */}
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                          <log.icon className={`w-5 h-5 ${log.color}`} />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {getTrendIcon(log.trend)}
+                          <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(log.status)}`}>
+                            {log.status}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {/* Title */}
+                      <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                        {log.type}
+                      </h3>
+                      
+                      {/* Value */}
+                      <div className="mb-3">
+                        <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{log.value}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Normal: {log.normalRange}</p>
+                      </div>
+                      
+                      {/* Time & Trend */}
+                      <div className="text-xs text-gray-600 dark:text-gray-400 mb-3">
+                        <p>{log.timestamp}</p>
+                        <p className="capitalize">Trend: {log.trend}</p>
+                      </div>
+                      
+                      {/* Notes */}
+                      {log.notes && (
+                        <div className="flex-1 mb-3">
+                          <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-3">{log.notes}</p>
+                        </div>
+                      )}
+                      
+                      {/* Actions */}
+                      <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
+                        <button className="text-blue-600 hover:text-blue-700 text-xs flex items-center gap-1">
+                          <Edit className="w-3 h-3" />
+                          Edit
+                        </button>
+                        <button className="text-red-600 hover:text-red-700 text-xs flex items-center gap-1">
+                          <Trash2 className="w-3 h-3" />
+                          Delete
+                        </button>
+                        <button className="text-gray-600 hover:text-gray-700 text-xs flex items-center gap-1">
+                          <Share2 className="w-3 h-3" />
+                          Share
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+            </div>
           )}
 
-          {viewMode === 'chart' && (
-            <Card className="p-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-                Health Trends & Analytics
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <button className="flex items-center gap-2 p-4 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
-                  <LineChart className="w-5 h-5 text-blue-500" />
-                  <span>Trend Analysis</span>
-                </button>
-                <button className="flex items-center gap-2 p-4 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
-                  <BarChart3 className="w-5 h-5 text-green-500" />
-                  <span>Compare Metrics</span>
-                </button>
-                <button className="flex items-center gap-2 p-4 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
-                  <PieChart className="w-5 h-5 text-purple-500" />
-                  <span>Distribution</span>
-                </button>
-              </div>
-              <div className="bg-gray-100 dark:bg-gray-800 rounded-lg h-64 flex items-center justify-center">
-                <p className="text-gray-500 dark:text-gray-400">Chart visualization would be displayed here</p>
-              </div>
-            </Card>
+          {filteredLogs.length === 0 && (
+            <div className="text-center py-12">
+              <Activity className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No logs found</h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                Start tracking your health by adding your first log entry.
+              </p>
+              <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 mx-auto">
+                <Plus className="w-4 h-4" />
+                Add First Entry
+              </button>
+            </div>
           )}
+        </Card>
+      )}
 
-          {viewMode === 'calendar' && (
-            <Card className="p-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-                Calendar View
-              </h2>
-              <div className="bg-gray-100 dark:bg-gray-800 rounded-lg h-96 flex items-center justify-center">
-                <p className="text-gray-500 dark:text-gray-400">Calendar view would be displayed here</p>
-              </div>
-            </Card>
-          )}
-        </div>
-      </div>
+      {viewMode === 'chart' && (
+        <Card className="p-6">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+            Health Trends & Analytics
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <button className="flex items-center gap-2 p-4 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+              <LineChart className="w-5 h-5 text-blue-500" />
+              <span>Trend Analysis</span>
+            </button>
+            <button className="flex items-center gap-2 p-4 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+              <BarChart3 className="w-5 h-5 text-green-500" />
+              <span>Compare Metrics</span>
+            </button>
+            <button className="flex items-center gap-2 p-4 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+              <PieChart className="w-5 h-5 text-purple-500" />
+              <span>Distribution</span>
+            </button>
+          </div>
+          <div className="bg-gray-100 dark:bg-gray-800 rounded-lg h-64 flex items-center justify-center">
+            <p className="text-gray-500 dark:text-gray-400">Chart visualization would be displayed here</p>
+          </div>
+        </Card>
+      )}
+
+      {viewMode === 'calendar' && (
+        <Card className="p-6">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+            Calendar View
+          </h2>
+          <div className="bg-gray-100 dark:bg-gray-800 rounded-lg h-96 flex items-center justify-center">
+            <p className="text-gray-500 dark:text-gray-400">Calendar view would be displayed here</p>
+          </div>
+        </Card>
+      )}
     </div>
   )
 }

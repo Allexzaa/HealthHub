@@ -2,14 +2,13 @@
 
 import { useState } from 'react'
 import { Card } from '@/components/shared/Card'
-import { Pill, Clock, Plus, Bell, Calendar, AlertTriangle, Search, Filter, Eye, Share2, Printer, Star, X, ChevronDown, ChevronRight, Heart, Brain, Shield, Zap, User, FileText, CheckCircle2, AlertCircle, Settings, Phone, MapPin, Download, Edit, Activity } from 'lucide-react'
+import { Pill, Clock, Plus, Bell, Calendar, AlertTriangle, Search, Filter, Eye, Share2, Printer, Star, X, ChevronDown, Heart, Brain, Shield, Zap, User, FileText, CheckCircle2, AlertCircle, Settings, Phone, MapPin, Download, Edit, Activity } from 'lucide-react'
 
 export default function Medications() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedMedication, setSelectedMedication] = useState(null)
   const [isFilterOpen, setIsFilterOpen] = useState(false)
-  const [expandedCategories, setExpandedCategories] = useState(['current'])
 
   const medications = [
     {
@@ -304,72 +303,68 @@ export default function Medications() {
         )}
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Categories Sidebar */}
-        <div className="lg:col-span-1">
-          <Card className="p-4">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Categories
+      {/* Compact Categories Bar */}
+      <Card className="p-4 mb-6 animate-in slide-in-from-top duration-300">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Categories</h3>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {categories.map((category) => {
+            const Icon = category.icon
+            const isActive = selectedCategory === category.id
+            return (
+              <button
+                key={category.id}
+                onClick={() => setSelectedCategory(category.id)}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm ${
+                  isActive
+                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                <Icon className={`w-4 h-4 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500'}`} />
+                <span className="font-medium">{category.name}</span>
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                  isActive
+                    ? 'bg-blue-200 dark:bg-blue-800 text-blue-800 dark:text-blue-200'
+                    : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-400'
+                }`}>
+                  {category.count}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      </Card>
+
+      {/* Medications List */}
+      <Card className="p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              {categories.find(c => c.id === selectedCategory)?.name || 'Medications'}
             </h2>
-            <div className="space-y-2">
-              {categories.map((category) => {
-                const Icon = category.icon
-                const isActive = selectedCategory === category.id
-                return (
-                  <button
-                    key={category.id}
-                    onClick={() => setSelectedCategory(category.id)}
-                    className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors text-left ${
-                      isActive
-                        ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700'
-                        : 'hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Icon className={`w-4 h-4 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500'}`} />
-                      <span className="text-sm font-medium">{category.name}</span>
-                    </div>
-                    <span className={`text-xs px-2 py-1 rounded-full ${
-                      isActive
-                        ? 'bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-300'
-                        : 'bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400'
-                    }`}>
-                      {category.count}
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-          </Card>
+          </div>
+          <div className="flex items-center gap-2">
+            <select className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-sm">
+              <option>Sort by Name</option>
+              <option>Sort by Next Dose</option>
+              <option>Sort by Refill Date</option>
+              <option>Sort by Priority</option>
+            </select>
+          </div>
         </div>
 
-        {/* Medications List */}
-        <div className="lg:col-span-3">
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                {categories.find(c => c.id === selectedCategory)?.name || 'Medications'}
-              </h2>
-              <div className="flex items-center gap-2">
-                <select className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-sm">
-                  <option>Sort by Name</option>
-                  <option>Sort by Next Dose</option>
-                  <option>Sort by Refill Date</option>
-                  <option>Sort by Priority</option>
-                </select>
-              </div>
-            </div>
-
-            {filteredMedications.length === 0 ? (
-              <div className="text-center py-12">
-                <Pill className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500 dark:text-gray-400">No medications found matching your criteria</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {filteredMedications.map((med) => (
-                  <div key={med.id} className={`border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 cursor-pointer group border-l-4 ${getPriorityColor(med.priority)}`}
-                       onClick={() => setSelectedMedication(med)}>
+        {filteredMedications.length === 0 ? (
+          <div className="text-center py-12">
+            <Pill className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-500 dark:text-gray-400">No medications found matching your criteria</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {filteredMedications.map((med) => (
+              <div key={med.id} className={`border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 cursor-pointer group border-l-4 ${getPriorityColor(med.priority)}`}
+                   onClick={() => setSelectedMedication(med)}>
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-4 flex-1">
                         <div className="w-14 h-14 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
@@ -452,12 +447,11 @@ export default function Medications() {
                         )}
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Card>
-        </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
       </div>
 
       {/* Today's Schedule & Reminders */}
