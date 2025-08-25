@@ -19,7 +19,7 @@ const navigation = [
   { name: 'Health Records', href: '/records', icon: FileText },
   { name: 'Medications', href: '/medications', icon: Pill },
   { name: 'Appointments', href: '/appointments', icon: Calendar },
-  { name: 'AI Chat', href: '/chat', icon: MessageCircle },
+  { name: 'Secure Chat', href: '/chat', icon: MessageCircle },
   { name: 'Insurance', href: '/insurance', icon: Shield },
   { name: 'Marketplace', href: '/marketplace', icon: ShoppingCart },
   { name: 'Community', href: '/forum', icon: Users },

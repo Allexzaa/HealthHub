@@ -2,14 +2,55 @@
 
 import { useState } from 'react'
 import { Card } from '@/components/shared/Card'
-import { Pill, Clock, Plus, Bell, Calendar, AlertTriangle, Search, Filter, Eye, Share2, Printer, Star, X, ChevronDown, ChevronRight, Heart, Brain, Shield, Zap, User, FileText, CheckCircle2, AlertCircle, Settings, Phone, MapPin, Download, Edit, Activity } from 'lucide-react'
+import { Pill, Clock, Plus, Bell, Calendar, AlertTriangle, Search, Filter, Eye, Share2, Printer, Star, X, ChevronDown, Heart, Brain, Shield, Zap, User, FileText, CheckCircle2, AlertCircle, Settings, Phone, MapPin, Download, Edit, Activity } from 'lucide-react'
+
+interface Medication {
+  id: number
+  name: string
+  genericName: string
+  brandName: string
+  dosage: string
+  strength: string
+  frequency: string
+  timeOfDay: string[]
+  nextDose: string
+  remaining: number
+  totalPills: number
+  refillDate: string
+  prescribedDate: string
+  prescribedBy: string
+  pharmacy: string
+  pharmacyPhone: string
+  status: string
+  category: string
+  condition: string
+  instructions: string
+  sideEffects: string[]
+  interactions: string[]
+  notes: string
+  cost: string
+  insurance: string
+  priority: string
+  refillsRemaining: number
+  lastTaken: string
+  adherence: number
+}
+
+interface ScheduleItem {
+  id: number
+  time: string
+  medication: string
+  medId: number
+  taken: boolean
+  takenAt?: string
+  upcoming?: boolean
+}
 
 export default function Medications() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
-  const [selectedMedication, setSelectedMedication] = useState(null)
+  const [selectedMedication, setSelectedMedication] = useState<Medication | null>(null)
   const [isFilterOpen, setIsFilterOpen] = useState(false)
-  const [expandedCategories, setExpandedCategories] = useState(['current'])
 
   const medications = [
     {
@@ -199,7 +240,7 @@ export default function Medications() {
     return matchesSearch && matchesCategory
   })
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'Active': return 'text-green-700 bg-green-100 dark:bg-green-900/20 dark:text-green-400'
       case 'Low Stock': return 'text-orange-700 bg-orange-100 dark:bg-orange-900/20 dark:text-orange-400'
@@ -208,7 +249,7 @@ export default function Medications() {
     }
   }
 
-  const getPriorityColor = (priority) => {
+  const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high': return 'border-l-red-500 bg-red-50/30 dark:bg-red-900/10'
       case 'normal': return 'border-l-blue-500 bg-blue-50/30 dark:bg-blue-900/10'
@@ -216,7 +257,7 @@ export default function Medications() {
     }
   }
 
-  const getAdherenceColor = (adherence) => {
+  const getAdherenceColor = (adherence: number) => {
     if (adherence >= 95) return 'text-green-600 bg-green-100 dark:bg-green-900/20'
     if (adherence >= 80) return 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900/20'
     return 'text-red-600 bg-red-100 dark:bg-red-900/20'
@@ -304,72 +345,68 @@ export default function Medications() {
         )}
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Categories Sidebar */}
-        <div className="lg:col-span-1">
-          <Card className="p-4">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Categories
+      {/* Compact Categories Bar */}
+      <Card className="p-4 mb-6">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Categories</h3>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {categories.map((category) => {
+            const Icon = category.icon
+            const isActive = selectedCategory === category.id
+            return (
+              <button
+                key={category.id}
+                onClick={() => setSelectedCategory(category.id)}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm ${
+                  isActive
+                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                <Icon className={`w-4 h-4 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500'}`} />
+                <span className="font-medium">{category.name}</span>
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                  isActive
+                    ? 'bg-blue-200 dark:bg-blue-800 text-blue-800 dark:text-blue-200'
+                    : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-400'
+                }`}>
+                  {category.count}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      </Card>
+
+      {/* Medications List */}
+      <Card className="p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              {categories.find(c => c.id === selectedCategory)?.name || 'Medications'}
             </h2>
-            <div className="space-y-2">
-              {categories.map((category) => {
-                const Icon = category.icon
-                const isActive = selectedCategory === category.id
-                return (
-                  <button
-                    key={category.id}
-                    onClick={() => setSelectedCategory(category.id)}
-                    className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors text-left ${
-                      isActive
-                        ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700'
-                        : 'hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Icon className={`w-4 h-4 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500'}`} />
-                      <span className="text-sm font-medium">{category.name}</span>
-                    </div>
-                    <span className={`text-xs px-2 py-1 rounded-full ${
-                      isActive
-                        ? 'bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-300'
-                        : 'bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400'
-                    }`}>
-                      {category.count}
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-          </Card>
+          </div>
+          <div className="flex items-center gap-2">
+            <select className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-sm">
+              <option>Sort by Name</option>
+              <option>Sort by Next Dose</option>
+              <option>Sort by Refill Date</option>
+              <option>Sort by Priority</option>
+            </select>
+          </div>
         </div>
 
-        {/* Medications List */}
-        <div className="lg:col-span-3">
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                {categories.find(c => c.id === selectedCategory)?.name || 'Medications'}
-              </h2>
-              <div className="flex items-center gap-2">
-                <select className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-sm">
-                  <option>Sort by Name</option>
-                  <option>Sort by Next Dose</option>
-                  <option>Sort by Refill Date</option>
-                  <option>Sort by Priority</option>
-                </select>
-              </div>
-            </div>
-
-            {filteredMedications.length === 0 ? (
-              <div className="text-center py-12">
-                <Pill className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500 dark:text-gray-400">No medications found matching your criteria</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {filteredMedications.map((med) => (
-                  <div key={med.id} className={`border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 cursor-pointer group border-l-4 ${getPriorityColor(med.priority)}`}
-                       onClick={() => setSelectedMedication(med)}>
+        {filteredMedications.length === 0 ? (
+          <div className="text-center py-12">
+            <Pill className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-500 dark:text-gray-400">No medications found matching your criteria</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {filteredMedications.map((med) => (
+              <div key={med.id} className={`border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 cursor-pointer group border-l-4 ${getPriorityColor(med.priority)}`}
+                   onClick={() => setSelectedMedication(med)}>
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-4 flex-1">
                         <div className="w-14 h-14 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
@@ -452,13 +489,11 @@ export default function Medications() {
                         )}
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Card>
-        </div>
-      </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
 
       {/* Today's Schedule & Reminders */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -618,172 +653,145 @@ export default function Medications() {
                       <div className="space-y-3">
                         <div>
                           <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Generic Name</label>
-                          <p className="text-gray-900 dark:text-white font-medium">{selectedMedication.genericName}</p>
+                          <p className="text-gray-900 dark:text-white font-medium">{selectedMedication?.genericName}</p>
                         </div>
+                        
                         <div>
                           <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Brand Name</label>
                           <p className="text-gray-900 dark:text-white font-medium">{selectedMedication.brandName}</p>
                         </div>
+                        
                         <div>
-                          <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Strength</label>
-                          <p className="text-gray-900 dark:text-white font-medium">{selectedMedication.strength}</p>
+                          <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Dosage</label>
+                          <p className="text-gray-900 dark:text-white font-medium">{selectedMedication.dosage}</p>
                         </div>
+                        
                         <div>
-                          <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Condition</label>
-                          <p className="text-gray-900 dark:text-white font-medium">{selectedMedication.condition}</p>
+                          <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Frequency</label>
+                          <p className="text-gray-900 dark:text-white font-medium">{selectedMedication.frequency}</p>
                         </div>
                       </div>
+                      
                       <div className="space-y-3">
                         <div>
                           <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Prescribed By</label>
                           <p className="text-gray-900 dark:text-white font-medium">{selectedMedication.prescribedBy}</p>
                         </div>
+                        
                         <div>
-                          <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Prescribed Date</label>
-                          <p className="text-gray-900 dark:text-white font-medium">{new Date(selectedMedication.prescribedDate).toLocaleDateString()}</p>
+                          <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Condition</label>
+                          <p className="text-gray-900 dark:text-white font-medium">{selectedMedication.condition}</p>
                         </div>
+                        
                         <div>
-                          <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Cost</label>
-                          <p className="text-gray-900 dark:text-white font-medium">{selectedMedication.cost} ({selectedMedication.insurance})</p>
+                          <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Pharmacy</label>
+                          <p className="text-gray-900 dark:text-white font-medium">{selectedMedication.pharmacy}</p>
                         </div>
+                        
                         <div>
-                          <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Adherence Rate</label>
-                          <p className="text-gray-900 dark:text-white font-medium">{selectedMedication.adherence}%</p>
+                          <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Status</label>
+                          <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedMedication.status)}`}>
+                            {selectedMedication.status}
+                          </span>
                         </div>
                       </div>
                     </div>
                   </div>
                   
                   <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Instructions</h4>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
-                      {selectedMedication.instructions}
-                    </p>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Common Side Effects</h4>
-                      <ul className="space-y-2">
-                        {selectedMedication.sideEffects.map((effect, index) => (
-                          <li key={index} className="flex items-start gap-2 text-sm">
-                            <AlertCircle className="w-4 h-4 text-yellow-500 mt-0.5 flex-shrink-0" />
-                            <span className="text-gray-600 dark:text-gray-400">{effect}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Instructions</h3>
+                    <p className="text-gray-700 dark:text-gray-300 mb-4">{selectedMedication.instructions}</p>
                     
-                    <div>
-                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Drug Interactions</h4>
-                      <ul className="space-y-2">
-                        {selectedMedication.interactions.map((interaction, index) => (
-                          <li key={index} className="flex items-start gap-2 text-sm">
-                            <AlertTriangle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
-                            <span className="text-gray-600 dark:text-gray-400">{interaction}</span>
-                          </li>
-                        ))}
-                      </ul>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <h4 className="font-medium text-gray-900 dark:text-white mb-2">Side Effects</h4>
+                        <ul className="space-y-1">
+                          {selectedMedication.sideEffects?.map((effect: string, index: number) => (
+                            <li key={index} className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                              <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
+                              {effect}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-medium text-gray-900 dark:text-white mb-2">Drug Interactions</h4>
+                        <ul className="space-y-1">
+                          {selectedMedication.interactions?.map((interaction: string, index: number) => (
+                            <li key={index} className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                              <div className="w-1.5 h-1.5 bg-red-500 rounded-full"></div>
+                              {interaction}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </div>
                 
-                {/* Pharmacy & Schedule Info */}
+                {/* Sidebar Information */}
                 <div className="space-y-6">
-                  <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-4">Pharmacy Information</h4>
-                    <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg space-y-3">
-                      <div>
-                        <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Pharmacy</label>
-                        <p className="text-gray-900 dark:text-white font-medium">{selectedMedication.pharmacy}</p>
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Phone</label>
-                        <p className="text-gray-900 dark:text-white font-medium">{selectedMedication.pharmacyPhone}</p>
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Refills Remaining</label>
-                        <p className="text-gray-900 dark:text-white font-medium">{selectedMedication.refillsRemaining}</p>
-                      </div>
-                      <button className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                        Call Pharmacy
-                      </button>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-4">Schedule</h4>
-                    <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg space-y-3">
-                      <div>
-                        <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Frequency</label>
-                        <p className="text-gray-900 dark:text-white font-medium">{selectedMedication.frequency}</p>
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Times</label>
-                        <div className="space-y-1">
-                          {selectedMedication.timeOfDay.map((time, index) => (
-                            <p key={index} className="text-gray-900 dark:text-white font-medium">{time}</p>
-                          ))}
-                        </div>
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Last Taken</label>
-                        <p className="text-gray-900 dark:text-white font-medium">{selectedMedication.lastTaken}</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-4">Stock Status</h4>
-                    <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                      <div className="flex justify-between items-center mb-2">
+                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Supply Status</h3>
+                    <div className="space-y-3">
+                      <div className="flex justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-400">Pills Remaining</span>
-                        <span className="font-bold text-gray-900 dark:text-white">{selectedMedication.remaining}</span>
+                        <span className="font-medium text-gray-900 dark:text-white">{selectedMedication.remaining}</span>
                       </div>
-                      <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-3 mb-3">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Total Pills</span>
+                        <span className="font-medium text-gray-900 dark:text-white">{selectedMedication.totalPills}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Refills Remaining</span>
+                        <span className="font-medium text-gray-900 dark:text-white">{selectedMedication.refillsRemaining}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Refill Date</span>
+                        <span className="font-medium text-gray-900 dark:text-white">{new Date(selectedMedication.refillDate).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4">
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-gray-600 dark:text-gray-400">Supply Level</span>
+                        <span className="font-medium">{Math.round((selectedMedication.remaining / selectedMedication.totalPills) * 100)}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
                         <div 
-                          className={`h-3 rounded-full ${
+                          className={`h-2 rounded-full ${
                             selectedMedication.remaining < 20 ? 'bg-red-500' : 
                             selectedMedication.remaining < 40 ? 'bg-yellow-500' : 'bg-green-500'
                           }`}
                           style={{ width: `${Math.min((selectedMedication.remaining / selectedMedication.totalPills) * 100, 100)}%` }}
                         ></div>
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
-                        Next refill due: {new Date(selectedMedication.refillDate).toLocaleDateString()}
-                      </p>
-                      <button className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                        Order Refill
-                      </button>
                     </div>
                   </div>
+                  
+                  <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4">
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Adherence</h3>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-1">
+                        {selectedMedication.adherence}%
+                      </div>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Last 30 days</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <button className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                      Set Reminder
+                    </button>
+                    <button className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+                      Order Refill
+                    </button>
+                    <button className="w-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                      Edit Medication
+                    </button>
+                  </div>
                 </div>
-              </div>
-              
-              {/* Additional Notes */}
-              {selectedMedication.notes && (
-                <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Additional Notes</h4>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-lg">
-                    {selectedMedication.notes}
-                  </p>
-                </div>
-              )}
-              
-              {/* Action Buttons */}
-              <div className="flex gap-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-                <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors">
-                  <Edit className="w-4 h-4" />
-                  Edit Medication
-                </button>
-                <button className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors">
-                  <Share2 className="w-4 h-4" />
-                  Share with Doctor
-                </button>
-                <button className="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors">
-                  <Printer className="w-4 h-4" />
-                  Print Info
-                </button>
               </div>
             </div>
           </div>
