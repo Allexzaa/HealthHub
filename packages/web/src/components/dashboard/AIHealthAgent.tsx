@@ -7,7 +7,7 @@ import {
   CheckCircle, Shield, Zap, MessageCircle, Calendar, Pill, Users,
   Target, Award, Sparkles, Eye, ArrowRight, Clock, Bell, X, Send,
   ThermometerSun, Droplets, Scale, Moon, Sun, Smile, Frown, 
-  Battery, Wifi, ChevronRight, Star, Globe, BookOpen, Phone
+  Battery, Wifi, ChevronRight, Star, Globe, BookOpen, Phone, FileText
 } from 'lucide-react'
 
 interface HealthMetric {
